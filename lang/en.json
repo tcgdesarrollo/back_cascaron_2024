@@ -6,11 +6,11 @@
     "school_name": "school name",
     "contact_name": "contact name",
     "line_types": "types of línea",
-    "vessel_info": "vessel identifier",
-    "vessel_previous": "previous vessels",
-    "vessel_previous.name": "previous vessel name",
-    "vessel_previous.code": "previous vessel code",
-    "vessel_previous.active_date": "previous vessel activation date",
-    "vessel_sisters.name": "previous vessel name",
-    "vessel_sisters.code": "previous vessel code"
+    "user_created": "Access to your account ",
+    "account_access": "Attached are the accesses to your new account",
+    "something_to_tell": "we have something to tell you!",
+    "temporal_password": "Temporary password",
+    "go_site": "Go to the website",
+    "important_to_us": "If you are receiving this email it is because you are important to us!"
+
 }

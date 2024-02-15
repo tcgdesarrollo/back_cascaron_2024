@@ -70,10 +70,15 @@ class UserController extends Controller
     {
         $password = Str::password(8);
         $request->merge([
-            'password' => Hash::make($password)
+            'password' => Hash::make($password),
+            'email'=>Str::lower($request->email)
         ]);
         $user = User::create($request->all());
-        (new QueueController())->store('created_user',[$user->email],['password'=>$password],true);
+        $extra = [
+            'password'=>$password,
+            'name'=>$user->name
+        ];
+        (new QueueController())->store('created_user',[$user->email],$extra,true, language: $user->language);
         return $this->sendResponse($user->load(self::detail_relations), 201);
     }
 

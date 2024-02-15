@@ -46,10 +46,10 @@
     "alkylating": "alquilante",
     "carrier": "operador",
     "remarks": "observaciones",
-    "vessel_previous": "embarcaciones anteriores",
-    "vessel_previous.name": "nombre de embarcación anterior",
-    "vessel_previous.code": "código de embarcación anterior",
-    "vessel_previous.active_date": "fecha de activación de embarcación anterior",
-    "vessel_sisters.name": "nombre de embarcación anterior",
-    "vessel_sisters.code": "código de embarcación anterior"
+    "user_created": "Acceso a su cuenta de ",
+    "account_access": "Adjuntamos los accesos de su nueva cuenta",
+    "something_to_tell": "tenemos algo que contarte!",
+    "temporal_password": "Contraseña temporal",
+    "go_site": "Ir al sitio",
+    "important_to_us": "¡Si recibes este email es porque eres importante para nosotros!"
 }

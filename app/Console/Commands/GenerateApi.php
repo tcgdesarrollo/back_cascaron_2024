@@ -266,17 +266,12 @@ class GenerateApi extends Command
                     ],
             ];
         }
-        if (str_contains($request_name, 'api/auth/register')) {
+        if (str_contains($request_name, 'api/user/register')) {
             $body['raw'] = json_encode([
                 'name' => '{{$randomFirstName}}',
-                'lastname' => '{{$randomLastName}}',
                 'email' => '{{$randomExampleEmail}}',
-                'address' => '{{$randomStreetAddress}}',
-                'member_number' => '{{$randomInt}}',
-                'city_id' => '{{$randomInt}}',
-                'state_id' => '{{INT10}}',
-                'country_id' => '{{INT10}}',
-                'language' => 'en',
+                'language' => 'es',
+                "roles" => [3]
             ]);
         }
 

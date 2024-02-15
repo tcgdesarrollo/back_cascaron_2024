@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamp('last_password_change')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
+            $table->string('language')->default('es');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

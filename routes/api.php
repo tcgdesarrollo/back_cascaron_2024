@@ -31,16 +31,16 @@ Route::group([
 Route::group([
     'middleware' => 'auth:sanctum',
 ], function ($router) {
-    Route::group(['prefix' => 'auth'], function () {
+    Route::group(['prefix' => 'user'], function () {
         Route::post('register', [UserController::class, 'store']);
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
+        Route::resource('user',UserController::class);
     });
     Route::apiResources([
         'country' => CountryController::class,
         'currency' => CurrencyController::class,
         'state' => StateController::class,
-        'user' => UserController::class,
         'role' => RoleController::class,
         'city' => CityController::class
     ]);
