@@ -52,7 +52,8 @@ class ProcessQueue extends Command
                     Mail::to($queue->to)->send(new NewUser($queue));
                     $queue->update([
                         'was_sent' => true,
-                        'deleted_at' => Carbon::now()
+                        'deleted_at' => Carbon::now(),
+                        'extra'=>['borrado para ocultar la contraseña']
                     ]);
                 } catch (\Exception $e) {
                     $queue->update(['sent_result' => $e->getMessage()]);
