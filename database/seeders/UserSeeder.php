@@ -38,15 +38,17 @@ class UserSeeder extends Seeder
         }
         $roles = Role::all();
         foreach ($roles as $role) {
+            $email = Str::lower($role->name) . "@test.com";
             User::updateOrCreate(
                 [
-                    'email' => Str::lower($role->name) . "@test.com"
+                    'email' => $email
                 ],
                 [
                     'password' => Hash::make(Str::random(8)),
                     'name' => $role
                 ]
             );
+            User::firstWhere(['email'=>$email])->roles()->sync([$role->id]);
         }
     }
 
