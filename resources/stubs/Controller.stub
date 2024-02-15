@@ -1,0 +1,162 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\{{ModelName}}Request;
+use App\Models\{{ModelName}};
+use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
+
+class {{ModelName}}Controller extends Controller
+{
+
+
+    const detail_relations = [
+
+    ];
+
+
+    /**
+     * @OA\Get(
+     *     path="/api/{{snake_name}}",
+     *     tags={"{{ModelName}}"},
+     *     summary="List of {{model_plural}}",
+     *     description="Get list of all registered {{model_plural}}",
+     *     operationId="list{{ModelName}}",
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *          @OA\JsonContent()
+     *     ),
+     *       security={{ "apiAuth": {} }}
+     *     ),
+     */
+    public function index(Request $request)
+    {
+        $query = {{ModelName}}::with(self::detail_relations);
+        return $this->sendResponsePaginate($query, $request);
+    }
+
+
+    /**
+     * Store a newly created resource.
+     *
+     * @param {{ModelName}}Request $request
+     * @return Response
+     *
+     * @OA\Post(
+     * path="/api/{{snake_name}}",
+     * summary="create a new {{model_lower}}",
+     * operationId="new{{model_lower}}",
+     * tags={"{{ModelName}}"},
+     * security={{ "apiAuth": {} }},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="data to create a new {{model_lower}}",
+     *    @OA\JsonContent(
+    @OA\Property(property="name", type="string", example="Example"),
+     *    ),
+     * ),
+     * @OA\Response(response=201, description="Created {{model_lower}}", @OA\JsonContent()),
+     * @OA\Response(response=400, description="Bad request", @OA\JsonContent()),
+     * @OA\Response(response=422, description="Bad request", @OA\JsonContent()),
+     * @OA\Response(response=404, description="Resource Not Found", @OA\JsonContent()),
+     * )
+     */
+    public function store({{ModelName}}Request $request): Response
+    {
+        ${{snake_under}} = {{ModelName}}::create($request->all());
+        return $this->sendResponse(${{snake_under}}->load(self::detail_relations), 201);
+    }
+
+    /**
+     * Show specific resource.
+     *
+     * @param string $id
+     * @return Response
+     *
+     * @OA\get(
+     * path="/api/{{snake_name}}/{{{model_lower}}}",
+     *  @OA\Parameter(description="ID of {{model_lower}}", in="path", name="{{model_lower}}", required=true,
+     *      @OA\Schema(type="integer", format="int64", example="1")
+     *  ),
+     * summary="Show specific {{model_plural}}",
+     * operationId="get{{ModelName}}",
+     * tags={"{{ModelName}}"},
+     * security={{ "apiAuth": {} }},
+     * @OA\Response(response=200, description="Operation executed successfully", @OA\JsonContent()),
+     * @OA\Response(response=400, description="Bad request", @OA\JsonContent()),
+     * @OA\Response(response=404, description="Resource Not Found", @OA\JsonContent()),
+     * )
+     */
+    public function show(string $id): Response
+    {
+        ${{snake_under}} = {{ModelName}}::with(self::detail_relations)->findOrFail($id);
+        return $this->sendResponse(${{snake_under}});
+    }
+
+
+    /**
+     * Update a resource.
+     *
+     * @param {{ModelName}}Request $request
+     * @param string $id
+     * @return Response
+     *
+     * @OA\Put(
+     * path="/api/{{snake_name}}/{{{model_lower}}}",
+     * @OA\Parameter(description="ID of {{model_lower}}", in="path", name="{{model_lower}}", required=true,
+     *      @OA\Schema(type="integer", format="int64", example="1")
+     *  ),
+     * summary="Update a {{model_lower}}",
+     * operationId="update{{ModelName}}",
+     * tags={"{{ModelName}}"},
+     * security={{ "apiAuth": {} }},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="data to update a {{model_lower}}",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="name", type="string", example="Example"),
+     *    ),
+     * ),
+     * @OA\Response(response=200, description="Operation executed successfully", @OA\JsonContent()),
+     * @OA\Response(response=400, description="Bad request", @OA\JsonContent()),
+     * @OA\Response(response=422, description="Bad request", @OA\JsonContent()),
+     * @OA\Response(response=404, description="Resource Not Found", @OA\JsonContent()),
+     * )
+     */
+    public function update({{ModelName}}Request $request, string $id): Response
+    {
+        ${{snake_under}} = {{ModelName}}::findOrFail($id);
+        ${{snake_under}}->update($request->all());
+        return $this->sendResponse(${{snake_under}}->fresh());
+    }
+
+    /**
+     * Delete a resource.
+     *
+     * @param string $id
+     * @return Response
+     * @OA\Delete(
+     * path="/api/{{snake_name}}/{{{model_lower}}}",
+     *  @OA\Parameter(description="ID of {{model_lower}}", in="path", name="{{model_lower}}", required=true,
+     *      @OA\Schema(type="integer", format="int64", example="1")
+     *  ),
+     * summary="Delete a {{model_lower}}",
+     * operationId="delete{{ModelName}}",
+     * tags={"{{ModelName}}"},
+     * security={{ "apiAuth": {} }},
+     * @OA\Response(response=200, description="Operation executed successfully", @OA\JsonContent()),
+     * @OA\Response(response=204, description="Operation executed successfully", @OA\JsonContent()),
+     * @OA\Response(response=400, description="Bad request", @OA\JsonContent()),
+     * @OA\Response(response=404, description="Resource Not Found", @OA\JsonContent()),
+     * )
+     */
+    public function destroy(string $id): Response
+    {
+        ${{snake_under}} = {{ModelName}}::findOrFail($id);
+        ${{snake_under}}->delete();
+        return $this->sendResponse("ok", 204);
+    }
+}
