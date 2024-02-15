@@ -44,8 +44,8 @@ class UserSeeder extends Seeder
                     'email' => $email
                 ],
                 [
-                    'password' => Hash::make(Str::random(8)),
-                    'name' => $role
+                    'password' => Hash::make('Pruebas123*'),
+                    'name' => $role->name
                 ]
             );
             User::firstWhere(['email'=>$email])->roles()->sync([$role->id]);

@@ -10,21 +10,21 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-class Tool extends Command
+class GenerateApi extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'run:tools';
+    protected $signature = 'generate:api';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generate dynamically api from endpoints';
 
     /**
      * Execute the console command.
@@ -40,11 +40,11 @@ class Tool extends Command
         $start = json_decode(file_get_contents(resource_path('api/start.json')), true);
         $end = json_decode(file_get_contents(storage_path('app/postman/' . Str::lower(env('APP_NAME')) . '_collection.json')), true);
         $headers = [
-            "_postman_id" => "eabe4327-4038-443e-8c7c-410afb9203c1",
-            "name" => Carbon::now()->format("Y_m_d_A") . "_master_data_collection.json",
-            "schema" => "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-            "_exporter_id" => "14065338",
-            "_collection_link" => "https://red-meteor-677589.postman.co/workspace/Masterdata~a78a3c92-85b0-4cee-9424-cbd9fa3078aa/collection/14065338-eabe4327-4038-443e-8c7c-410afb9203c1?action=share&source=collection_link&creator=14065338"
+            "_postman_id" => $start["info"]["_postman_id"],
+            "name" => Carbon::now()->format("Y_m_d_A") . "_ballywulff_collection.json",
+            "schema" => $start["info"]["schema"],
+            "_exporter_id" => $start["info"]["_exporter_id"],
+            "_collection_link" => $start["info"]["_collection_link"]
         ];
         $start["info"] = $headers;
         $end["info"] = $headers;
@@ -52,7 +52,8 @@ class Tool extends Command
         $end['item'] = $this->cleanItems($end['item']);
         $file_to = fopen('api.json', 'w');
         $result = array_replace_recursive($end, $start);
-        $result['variable'] = $this->setVariables($start['variable']);
+        if (isset($start['variable']))
+            $result['variable'] = $this->setVariables($start['variable']);
         $result['event'] = $this->setGlobalEvents();
         fwrite($file_to, json_encode($result));
         fclose($file_to);
@@ -60,7 +61,7 @@ class Tool extends Command
 
     private function setGlobalEvents()
     {
-        $words = json_encode($this->wordsGenerator(rand(3,10)));
+        $words = json_encode($this->wordsGenerator(rand(3, 10)));
         $prerequest = [
             "listen" => "prerequest",
             "script" => [
@@ -100,10 +101,11 @@ class Tool extends Command
 
     }
 
-    private function wordsGenerator($size, $is_json = false){
+    private function wordsGenerator($size, $is_json = false)
+    {
         $results = [];
-        foreach (range(1,$size) as $item){
-            $results[]= Str::random(5);
+        foreach (range(1, $size) as $item) {
+            $results[] = Str::random(5);
         }
         return $results;
     }
@@ -116,7 +118,7 @@ class Tool extends Command
                 "name" => $namespace['name'],
                 "item" => []
             ];
-            foreach ($namespace['item'] as $item) {
+            foreach ($namespace['item'] as $key => $item) {
                 $request = null;
                 if (array_key_exists('item', $item)) {
                     $subelement = $item['item'][0];
@@ -134,7 +136,7 @@ class Tool extends Command
                     $request['request']['url'] = $this->setUrl($request['request']['url']);
                     $request['request']['body'] = $this->getBody($request['request'], $request['name']);
                     $namespace_items["item"][] = $request;
-                    $copy = $this->createCopy($request);
+                    $copy = $this->createCopy($request, key: $key);
                     $copy = $this->setEvent($copy, false);
                     $namespace_items["item"][] = $copy;
                 }
@@ -149,10 +151,10 @@ class Tool extends Command
         return $results;
     }
 
-    private function createCopy($original)
+    private function createCopy($original, $key = null): array
     {
         $copy = $original;
-        $copy['request']['auth'] = $this->setToken($copy['request'], false);
+        $copy['request']['auth'] = $this->setToken($copy['request'], false, key: $key);
         $copy['name'] = "SERVER_" . $copy['name'];
         $copy['request']['body'] = $this->getBody($copy['request'], $copy['name']);
         $copy['request']['url'] = $this->setUrl($copy['request']['url'], false);
@@ -172,16 +174,23 @@ class Tool extends Command
         return $request;
     }
 
-    private function setToken($auth, $is_local = true): array
+    private function setToken($auth, $is_local = true, $key = null): array
     {
-        if (isset($auth['auth']) && !$is_local) {
+        $url = $auth['url']['path'];
+        Log::debug("url", [$url, $is_local, $key]);
+        if ($url == ["api", "auth", "login"]) {
+            return [
+                "type" => "noauth"
+            ];
+        }
+        if ($is_local) {
             return [
                 'type' => 'bearer',
                 'bearer' =>
                     [
                         [
                             'key' => 'token',
-                            'value' => '{{TOKEN_SERVER}}',
+                            'value' => '{{TOKEN}}',
                             'type' => 'string',
                         ],
                     ],
@@ -193,23 +202,25 @@ class Tool extends Command
                 [
                     [
                         'key' => 'token',
-                        'value' => '{{TOKEN}}',
+                        'value' => '{{TOKEN_SERVER}}',
                         'type' => 'string',
                     ],
                 ],
-        ];
+        ];;
     }
 
     private function setEvent($request, $is_local = true): array
     {
-        if (isset($request['event'])) {
-            if (str_contains($request['name'], 'api/auth/login')) {
-                if ($is_local)
-                    $request['event'][0]['script']['exec'][0] = 'pm.collectionVariables.set(\'TOKEN\',pm.response.json().data)';
-                else
-                    $request['event'][0]['script']['exec'][0] = 'pm.collectionVariables.set(\'TOKEN_SERVER\',pm.response.json().data)';
-            }
+        if (!isset($request['event'])) {
+            $request['event'] = [];
         }
+        if (str_contains($request['name'], 'api/auth/login')) {
+            if ($is_local)
+                $request['event'][0]['script']['exec'][0] = 'pm.collectionVariables.set(\'TOKEN\',pm.response.json().data)';
+            else
+                $request['event'][0]['script']['exec'][0] = 'pm.collectionVariables.set(\'TOKEN_SERVER\',pm.response.json().data)';
+        }
+
         return $request;
     }
 
@@ -217,11 +228,11 @@ class Tool extends Command
     {
         $server_url = [
             'key' => 'SERVER_URL',
-            'value' => 'https://masterdata.thecloudgroup.tech',
+            'value' => 'https://ballywulff.thecloudgroup.tech',
         ];
         $local_url = [
             'key' => 'LOCAL_URL',
-            'value' => 'http://localhost:8015',
+            'value' => 'http://localhost:8022',
         ];
         $variables[] = $server_url;
         $variables[] = $local_url;
@@ -269,6 +280,13 @@ class Tool extends Command
             ]);
         }
 
+        if (str_contains($request_name, 'api/auth/login')) {
+            $body['raw'] = json_encode([
+                'email' => 'superadmin@test.com',
+                'password' => 'Pruebas123*',
+            ]);
+        }
+
         $columns_excluded = [
             'id',
             'created_at',
@@ -290,27 +308,11 @@ class Tool extends Command
                 $body['raw'] = $this->setBodyFromCollumns($columns, $plural);
             }
         }
-        if (str_contains($request_name, 'api/vessel-info') && $method == 'POST') {
-            $current = json_decode($body['raw'], true);
-            $current['vessel_previous'] = [
-                [
-                    'name' => Str::random(10),
-                    'code' => Str::random(6),
-                    'active_date' => fake()->date(),
-                ]
-            ];
-            $body['raw'] = json_encode($current);
-        }
+
 
         return $body;
     }
 
-    private function replicateElement($elem)
-    {
-        foreach (range(1, rand(2, 10)) as $item) {
-
-        }
-    }
 
     public function setBodyFromCollumns($columns, $schema_name): bool|string
     {
@@ -343,7 +345,7 @@ class Tool extends Command
                     $items = array_merge($items, [$column => '{{$randomLoremText}}']);
                 } elseif ($column_name == 'double') {
                     $items = array_merge($items, [$column => '{{$randomInt}}.{{INT10}}']);
-                }  elseif ($column_name == 'tinyint') {
+                } elseif ($column_name == 'tinyint') {
                     $items = array_merge($items, [$column => '{{BOOLEAN}}']);
                 } elseif ($column_name == 'bigint') {
                     $items = array_merge($items, [$column => '{{$randomInt}}']);

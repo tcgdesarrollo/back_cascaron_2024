@@ -6,6 +6,8 @@ use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use OpenApi\Annotations as OA;
 
 class UserController extends Controller
@@ -66,7 +68,12 @@ class UserController extends Controller
      */
     public function store(UserRequest $request): Response
     {
+        $password = Str::password(8);
+        $request->merge([
+            'password' => Hash::make($password)
+        ]);
         $user = User::create($request->all());
+        (new QueueController())->store('created_user',[$user->email],['password'=>$password],true);
         return $this->sendResponse($user->load(self::detail_relations), 201);
     }
 

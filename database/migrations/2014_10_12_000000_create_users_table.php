@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('name', 60);
             $table->string('avatar')->nullable()->comment('this profile_photo_path');
             $table->string('active_directory_id')->nullable();
-            $table->string('user', 25)->nullable()->unique();
             $table->string('email', 45)->unique();
+            $table->timestamp('last_password_change')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->rememberToken();

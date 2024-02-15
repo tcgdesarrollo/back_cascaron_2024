@@ -1,175 +1,12 @@
 {
 	"info": {
-		"_postman_id": "fb90c7aa-02d1-4e86-a7f0-5dd9a1c06814",
-		"name": "2024_01_08_16_23_59_master_data_collection.json",
+		"_postman_id": "e0c0902c-6237-46a3-839a-8aa8097d3670",
+		"name": "2024_02_15_PM_ballywulff_collection.json",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "14065338",
-		"_collection_link": "https://red-meteor-677589.postman.co/workspace/Masterdata~a78a3c92-85b0-4cee-9424-cbd9fa3078aa/collection/14065338-fb90c7aa-02d1-4e86-a7f0-5dd9a1c06814?action=share&source=collection_link&creator=14065338"
+		"_collection_link": "https://red-meteor-677589.postman.co/workspace/ballyWulff~623fb7cc-23c1-46de-8ac4-a61a5894f32e/collection/14065338-e0c0902c-6237-46a3-839a-8aa8097d3670?action=share&source=collection_link&creator=14065338"
 	},
-	"item": [
-		{
-			"name": "auth",
-			"item": [
-				{
-					"name": "api/auth/login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.collectionVariables.set('TOKEN',pm.response.json().data)"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "x-lang",
-								"value": "es"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\":\"admin@demo.com\",\r\n    \"password\":\"demo\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/login",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "api/auth/logout",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "x-lang",
-								"value": "es"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "[]",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/logout",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"logout"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "api/auth/me",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "x-lang",
-								"value": "es"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/auth/me",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"me"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	],
+	"item": [],
 	"event": [
 		{
 			"listen": "prerequest",
@@ -180,7 +17,19 @@
 					"pm.collectionVariables.set(\"INT10\", Math.floor(Math.random()*10))",
 					"pm.collectionVariables.set(\"INT50\", Math.floor(Math.random()*50))",
 					"pm.collectionVariables.set(\"INT100\", Math.floor(Math.random()*100))",
-					"pm.collectionVariables.set(\"BOOLEAN\", Math.floor(Math.random()*2))"
+					"pm.collectionVariables.set(\"BOOLEAN\", Math.floor(Math.random()*2))",
+					"function randomDate(start, end) {",
+					"        return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));",
+					"}",
+					"var date = randomDate(new Date(2000, 0, 1), new Date());",
+					"var year_last_integer = Math.floor(Math.random() * 10);",
+					"const month = date.getMonth()+1;",
+					"const real_month = month < 10? `0${month}`: month;",
+					"var formattedDate =  '199' + year_last_integer + '/' +real_month + '/' + date.getDate();",
+					"pm.collectionVariables.set(\"date\", formattedDate)",
+					"",
+					"",
+					""
 				]
 			}
 		},
@@ -196,28 +45,12 @@
 	],
 	"variable": [
 		{
-			"key": "base_url",
-			"value": "http://127.0.0.1:8015"
-		},
-		{
-			"key": "INT10",
-			"value": ""
-		},
-		{
-			"key": "TOKEN",
-			"value": ""
-		},
-		{
-			"key": "BOOLEAN",
-			"value": ""
-		},
-		{
 			"key": "SERVER_URL",
-			"value": "https://masterdata.thecloudgroup.tech"
+			"value": "https://ballywulff.thecloudgroup.tech"
 		},
 		{
-			"key": "SERVER_URL",
-			"value": "https://masterdata.thecloudgroup.tech"
+			"key": "LOCAL_URL",
+			"value": "http://localhost:8022"
 		}
 	]
 }
